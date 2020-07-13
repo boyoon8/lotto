@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:lotto_dream/LottoInfo2.dart';
+import 'package:lotto_dream/lotto_info.dart';
 import 'package:lotto_dream/firebase.dart';
 import 'package:lotto_dream/lottoconfig.dart';
-import 'package:lotto_dream/data.dart';
 import 'package:lotto_dream/lottodata.dart';
 import 'package:lotto_dream/msg.dart';
 import 'package:lotto_dream/subpage.dart';
@@ -41,9 +43,9 @@ class _MyHomePageState extends State<MyHomePage>
   TextEditingController editingController = TextEditingController();
   // TabController controller;
 
-  static const _adUnitID = "ca-app-pub-3512587290196762/4432298596";
+  // static const _adUnitID = "ca-app-pub-3512587290196762/4432298596";
 
-  // static const _adUnitID = "ca-app-pub-3940256099942544/2247696110"; //테스트 아이디
+  static const _adUnitID = "ca-app-pub-3940256099942544/2247696110"; //테스트 아이디
 
   final _controller = NativeAdmobController();
   final _randomizer = new Random(); // can get a seed as a parameter
@@ -56,6 +58,9 @@ class _MyHomePageState extends State<MyHomePage>
 
   List<Lhs> configItems = [];
   var cItems = List<Lhs>();
+
+  List<Info> listinfo = [];
+  var infos = List<Info>();
 
   List<String> keywordItems = [];
   var kItems = List<String>();
@@ -75,12 +80,38 @@ class _MyHomePageState extends State<MyHomePage>
   int admobrandispaly1 = 10;
   int admobrandispaly2 = 10;
 
-  final scaffoldKey = GlobalKey<ScaffoldState>();
+  int totSellamnt = 0;
+  int firstWinamnt = 0;
+  int firstAccumamnt = 0;
+  int firstPrzwnerCo = 0;
+
+  // final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  List<DropdownMenuItem> _dropdownMenuItems;
+  int _selectedCompany;
 
   Future<LottoConfig> fetchConfig() async {
     var res = await http.get('http://lotto.dbpopcon.com/search/config');
 
     LottoConfig result = LottoConfig.fromJson(json.decode(res.body));
+
+    return result;
+  }
+
+  Future<Lotto_info> fetchInfo() async {
+    var res = await http.get('http://lotto.dbpopcon.com/search/drwNo_info');
+
+    Lotto_info result = Lotto_info.fromJson(json.decode(res.body));
+
+    return result;
+  }
+
+  Future<LottoInfo2> fetchInfo2() async {
+    var url = 'http://lotto.dbpopcon.com/search/drwNo_info2/' +
+        '${this._selectedCompany}';
+    var res = await http.get(url);
+
+    LottoInfo2 result = LottoInfo2.fromJson(json.decode(res.body));
 
     return result;
   }
@@ -95,6 +126,22 @@ class _MyHomePageState extends State<MyHomePage>
     items.addAll(listItems);
 
     return result;
+  }
+
+  List<DropdownMenuItem> buildDropdownMenuItems(List infos) {
+    List<DropdownMenuItem> items = List();
+    infos.forEach((element) {
+      items.add(
+        DropdownMenuItem(
+          value: int.parse(element.lhsDrwNo),
+          child: Text(
+              ' ' + element.lhsDrwNo + '회차 (' + element.lhsDrwNoDate + ')',
+              style: TextStyle(fontSize: 20)),
+        ),
+      );
+    });
+
+    return items;
   }
 
   @override
@@ -130,6 +177,22 @@ class _MyHomePageState extends State<MyHomePage>
         this.keywordItems.add(element);
       });
     });
+
+    fetchInfo().then((lottoinfo) {
+      this.listinfo = lottoinfo.info;
+      this.listinfo.forEach((element) {
+        this.infos.add(element);
+      });
+
+      _dropdownMenuItems = buildDropdownMenuItems(infos);
+      _selectedCompany = _dropdownMenuItems[0].value;
+    });
+    fetchInfo2().then((lottoinfo2) {
+      this.totSellamnt = int.parse(lottoinfo2.totSellamnt);
+      this.firstWinamnt = int.parse(lottoinfo2.firstWinamnt);
+      this.firstAccumamnt = int.parse(lottoinfo2.firstAccumamnt);
+      this.firstPrzwnerCo = int.parse(lottoinfo2.firstPrzwnerCo);
+    });
     adMob.init();
   }
 
@@ -139,11 +202,17 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
   }
 
+  onChangeDropdownItem(int selectedCompany) {
+    setState(() {
+      _selectedCompany = selectedCompany;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (this._visible)
       return Scaffold(
-        key: scaffoldKey, // 발급한 키를 Scaffold에 등록
+        // key: scaffoldKey, // 발급한 키를 Scaffold에 등록
         body: new Column(
           children: <Widget>[
             Stack(
@@ -202,8 +271,8 @@ class _MyHomePageState extends State<MyHomePage>
                                   if (_randomizer
                                           .nextInt(this.admobrandispaly1) ==
                                       1) adMob.showInterstitialAd();
-                                  scaffoldKey.currentState
-                                      .hideCurrentSnackBar();
+                                  // scaffoldKey.currentState
+                                  //     .hideCurrentSnackBar();
                                   return _handleSubmitted(
                                       editingController.text);
                                 },
@@ -228,8 +297,9 @@ class _MyHomePageState extends State<MyHomePage>
                           MaterialButton(
                             height: 30,
                             minWidth: 10,
-                            child: Text('${this.keywordItems[0]}'),
-                            color: Colors.green,
+                            child: Text('${this.keywordItems[0]}',
+                                style: TextStyle(fontSize: 15)),
+                            color: Colors.green[400],
                             textColor: Colors.white,
                             onPressed: () {
                               editingController.text = this.keywordItems[0];
@@ -241,8 +311,9 @@ class _MyHomePageState extends State<MyHomePage>
                           MaterialButton(
                             height: 30,
                             minWidth: 10,
-                            child: Text('${this.keywordItems[1]}'),
-                            color: Colors.green,
+                            child: Text('${this.keywordItems[1]}',
+                                style: TextStyle(fontSize: 15)),
+                            color: Colors.green[400],
                             textColor: Colors.white,
                             onPressed: () {
                               editingController.text = this.keywordItems[1];
@@ -254,8 +325,9 @@ class _MyHomePageState extends State<MyHomePage>
                           MaterialButton(
                             height: 30,
                             minWidth: 10,
-                            child: Text('${this.keywordItems[2]}'),
-                            color: Colors.green,
+                            child: Text('${this.keywordItems[2]}',
+                                style: TextStyle(fontSize: 15)),
+                            color: Colors.green[400],
                             textColor: Colors.white,
                             onPressed: () {
                               editingController.text = this.keywordItems[2];
@@ -267,8 +339,9 @@ class _MyHomePageState extends State<MyHomePage>
                           MaterialButton(
                             height: 30,
                             minWidth: 10,
-                            child: Text('${this.keywordItems[3]}'),
-                            color: Colors.green,
+                            child: Text('${this.keywordItems[3]}',
+                                style: TextStyle(fontSize: 15)),
+                            color: Colors.green[400],
                             textColor: Colors.white,
                             onPressed: () {
                               editingController.text = this.keywordItems[3];
@@ -280,8 +353,9 @@ class _MyHomePageState extends State<MyHomePage>
                           MaterialButton(
                             height: 30,
                             minWidth: 10,
-                            child: Text('${this.keywordItems[4]}'),
-                            color: Colors.green,
+                            child: Text('${this.keywordItems[4]}',
+                                style: TextStyle(fontSize: 15)),
+                            color: Colors.green[400],
                             textColor: Colors.white,
                             onPressed: () {
                               editingController.text = this.keywordItems[4];
@@ -298,51 +372,332 @@ class _MyHomePageState extends State<MyHomePage>
               ],
             ),
             if (items.length < 1 || editingController.text == '')
-              new Expanded(
-                  child: Column(
+              Column(
                 children: [
                   Padding(padding: EdgeInsets.only(top: 10)),
-                  Text('최근 당첨 번호', style: TextStyle(fontSize: 25)),
-                  new Expanded(
-                    child: ListView.separated(
-                      // padding: const EdgeInsets.only(top: 20, bottom: 20),
-                      // padding: const EdgeInsets.only(top: 20, bottom: 20),
-                      itemCount: configItems.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          height: 40,
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Padding(padding: EdgeInsets.only(left: 10)),
-                              Text(
-                                configItems[index].lhsDrwNo + '회 : ',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        // color: Colors.green[400],
+                        child: DropdownButton(
+                          value: _selectedCompany,
+                          items: _dropdownMenuItems,
+                          onChanged: (value) {
+                            onChangeDropdownItem(value);
+                          },
+                        ),
+                      ),
+                      Text(' 당첨 번호 확인', style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                  // Padding(padding: EdgeInsets.all(5)),
+                  Container(
+                    height: 40,
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        Padding(padding: EdgeInsets.only(left: 10)),
+                        Text(
+                          configItems[0].lhsDrwNo + '회 ',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo1}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
                               ),
-                              Padding(padding: EdgeInsets.all(10)),
-                              Text(
-                                configItems[index]
-                                    .lhsDrwtNo, // You need to pass the string you want the highlights
-
-                                style: TextStyle(
-                                    // You can set the general style, like a Text()
-                                    fontSize: 20.0,
-                                    color: Colors.black,
-                                    wordSpacing: 4.0),
-                                textAlign: TextAlign
-                                    .justify, // You can use any attribute of the RichText widget
-                              ),
-                            ],
+                            ),
                           ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo1),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo2}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo2),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo3}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo3),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo4}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo4),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo5}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo5),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo6}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo6),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Text(
+                          '+',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsBnusNo}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsBnusNo),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(4),
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      MaterialButton(
+                        height: 30,
+                        minWidth: 10,
+                        child: Text('QR 코드로 당첨 확인하기',
+                            style: TextStyle(fontSize: 15)),
+                        color: Colors.green[400],
+                        textColor: Colors.white,
+                        onPressed: () {
+                          editingController.text = this.keywordItems[1];
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      MaterialButton(
+                        height: 30,
+                        minWidth: 10,
+                        child: Text('기타', style: TextStyle(fontSize: 15)),
+                        color: Colors.green[400],
+                        textColor: Colors.white,
+                        onPressed: () {
+                          editingController.text = this.keywordItems[2];
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                    ],
+                  ),
+
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Text('총 팬매 금액 : '),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      Text(numberWithComma(this.totSellamnt)),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Text('1등 당첨 금액 : '),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      Text(numberWithComma(this.firstAccumamnt)),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Text('1등 당첨자 : '),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      Text(numberWithComma(this.firstPrzwnerCo)),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                    ],
+                  ),
                 ],
-              ))
+              )
             else
               new Expanded(
                 child: new ListView.builder(
@@ -450,7 +805,7 @@ class _MyHomePageState extends State<MyHomePage>
       child: SizedBox(
         child: Card(
           elevation: 4,
-          color: Colors.lightBlue,
+          color: Colors.blue[300],
           child: Padding(
             padding: EdgeInsets.all(5),
             child: Row(
@@ -499,7 +854,7 @@ class _MyHomePageState extends State<MyHomePage>
                         '${lottoData.cnt} 회',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.red,
+                          color: Colors.red[900],
                           fontSize: 15.0,
                         ),
                       ),
@@ -538,7 +893,7 @@ class _MyHomePageState extends State<MyHomePage>
                       Center(
                         child: FlatButton(
                           child: Text('당첨 회차 보러가기'),
-                          color: Colors.orange,
+                          color: Colors.orange[300],
                           textColor: Colors.black,
                           onPressed: () {
                             if (_randomizer.nextInt(this.admobrandispaly1) == 1)
@@ -611,11 +966,31 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  showSnackbarWithKey() {
-    // 키를 통해 Scaffold에 접근하여 스낵바 출력
-    scaffoldKey.currentState.showSnackBar(SnackBar(
-        // duration: Duration(days: 1),
-        content: Text("${this.keyword}", style: TextStyle(fontSize: 20))));
+  // showSnackbarWithKey() {
+  //   // 키를 통해 Scaffold에 접근하여 스낵바 출력
+  //   scaffoldKey.currentState.showSnackBar(SnackBar(
+  //       // duration: Duration(days: 1),
+  //       content: Text("${this.keyword}", style: TextStyle(fontSize: 20))));
+  // }
+
+  _aaaa(String val) {
+    if (int.parse(val) < 11)
+      return [Colors.yellow[700], Colors.yellow[700]];
+    else if (int.parse(val) < 21)
+      return [Colors.blue[800], Colors.blue[800]];
+    else if (int.parse(val) < 31)
+      return [Colors.red[800], Colors.red[800]];
+    else if (int.parse(val) < 41)
+      return [Colors.black, Colors.black];
+    else
+      return [Colors.green[800], Colors.green[800]];
+  }
+
+  String numberWithComma(int param) {
+    // return new NumberFormat('###,###,###,###')
+    // .format(param)
+    // .replaceAll(' ', '');
+    return param.toString();
   }
 }
 

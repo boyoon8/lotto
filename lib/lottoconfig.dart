@@ -96,21 +96,48 @@ class Hinttext2 {
 class Lhs {
   String lhsDrwNo;
   String lhsDrwNoDate;
-  String lhsDrwtNo;
+  String lhsDrwtNo1;
+  String lhsDrwtNo2;
+  String lhsDrwtNo3;
+  String lhsDrwtNo4;
+  String lhsDrwtNo5;
+  String lhsDrwtNo6;
+  String lhsBnusNo;
 
-  Lhs({this.lhsDrwNo, this.lhsDrwNoDate, this.lhsDrwtNo});
+  Lhs(
+      {this.lhsDrwNo,
+      this.lhsDrwNoDate,
+      this.lhsDrwtNo1,
+      this.lhsDrwtNo2,
+      this.lhsDrwtNo3,
+      this.lhsDrwtNo4,
+      this.lhsDrwtNo5,
+      this.lhsDrwtNo6,
+      this.lhsBnusNo});
 
   Lhs.fromJson(Map<String, dynamic> json) {
     lhsDrwNo = json['lhs_drwNo'];
     lhsDrwNoDate = json['lhs_drwNoDate'];
-    lhsDrwtNo = json['lhs_drwtNo'];
+    lhsDrwtNo1 = json['lhs_drwtNo1'];
+    lhsDrwtNo2 = json['lhs_drwtNo2'];
+    lhsDrwtNo3 = json['lhs_drwtNo3'];
+    lhsDrwtNo4 = json['lhs_drwtNo4'];
+    lhsDrwtNo5 = json['lhs_drwtNo5'];
+    lhsDrwtNo6 = json['lhs_drwtNo6'];
+    lhsBnusNo = json['lhs_bnusNo'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['lhs_drwNo'] = this.lhsDrwNo;
     data['lhs_drwNoDate'] = this.lhsDrwNoDate;
-    data['lhs_drwtNo'] = this.lhsDrwtNo;
+    data['lhs_drwtNo1'] = this.lhsDrwtNo1;
+    data['lhs_drwtNo2'] = this.lhsDrwtNo2;
+    data['lhs_drwtNo3'] = this.lhsDrwtNo3;
+    data['lhs_drwtNo4'] = this.lhsDrwtNo4;
+    data['lhs_drwtNo5'] = this.lhsDrwtNo5;
+    data['lhs_drwtNo6'] = this.lhsDrwtNo6;
+    data['lhs_bnusNo'] = this.lhsBnusNo;
     return data;
   }
 }

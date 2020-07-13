@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lotto_dream/lhsdrwno.dart';
-import 'package:highlight_text/highlight_text.dart';
+
 import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:flutter_native_admob/native_admob_controller.dart';
+import 'package:lotto_dream/lottodata.dart';
 
 class SubPage extends StatelessWidget {
   final List<LhsDrwNo> lotto;
@@ -12,30 +12,8 @@ class SubPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, HighlightedWord> words = {
-      "${this.lottoNum}": HighlightedWord(
-        onTap: () {
-          print("Flutter");
-        },
-        textStyle: TextStyle(
-          color: Colors.blue,
-          fontSize: 22.0,
-        ),
-      ),
-      "(${this.lottoNum})": HighlightedWord(
-        onTap: () {
-          print("Flutter");
-        },
-        textStyle: TextStyle(
-          color: Colors.blue,
-          fontSize: 22.0,
-        ),
-      ),
-    };
-
-    HighlightMap highlightMap = HighlightMap(words);
-    const _adUnitID = "ca-app-pub-3512587290196762/4432298596";
-    // const _adUnitID = "ca-app-pub-3940256099942544/2247696110"; // test id
+    // const _adUnitID = "ca-app-pub-3512587290196762/4432298596";
+    const _adUnitID = "ca-app-pub-3940256099942544/2247696110"; // test id
 
     final _controller = NativeAdmobController();
     return Scaffold(
@@ -68,22 +46,241 @@ class SubPage extends StatelessWidget {
                   children: [
                     Padding(padding: EdgeInsets.only(left: 10)),
                     Text(
-                      lotto[index].drwNo + ' : ',
+                      lotto[index].lhsDrwNo + '회 : ',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Padding(padding: EdgeInsets.all(10)),
-                    TextHighlight(
-                      text: lotto[index]
-                          .drwtNo, // You need to pass the string you want the highlights
-                      words: highlightMap.getMap, // Your dictionary words
-                      textStyle: TextStyle(
-                          // You can set the general style, like a Text()
-                          fontSize: 20.0,
-                          color: Colors.black,
-                          wordSpacing: 4.0),
-                      textAlign: TextAlign
-                          .justify, // You can use any attribute of the RichText widget
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsDrwtNo1}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsDrwtNo1)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsDrwtNo1)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsDrwtNo1),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsDrwtNo2}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsDrwtNo2)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsDrwtNo2)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsDrwtNo2),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsDrwtNo3}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsDrwtNo3)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsDrwtNo3)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsDrwtNo3),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsDrwtNo4}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsDrwtNo4)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsDrwtNo4)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsDrwtNo4),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsDrwtNo5}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsDrwtNo5)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsDrwtNo5)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsDrwtNo5),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsDrwtNo6}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsDrwtNo6)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsDrwtNo6)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsDrwtNo6),
+                        ),
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Text(
+                      '+',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.only(left: 5)),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${lotto[index].lhsBnusNo}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: lottoNum == int.parse(lotto[index].lhsBnusNo)
+                              ? Colors.red
+                              : Colors.black,
+                          style: BorderStyle.solid,
+                          width: lottoNum == int.parse(lotto[index].lhsBnusNo)
+                              ? 3.0
+                              : 1.0,
+                        ),
+                        gradient: LinearGradient(
+                          colors: _aaaa(lotto[index].lhsBnusNo),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -99,21 +296,240 @@ class SubPage extends StatelessWidget {
                 children: [
                   Padding(padding: EdgeInsets.only(left: 10)),
                   Text(
-                    lotto[index].drwNo + ' : ',
+                    lotto[index].lhsDrwNo + '회 : ',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  Padding(padding: EdgeInsets.all(10)),
-                  TextHighlight(
-                    text: lotto[index]
-                        .drwtNo, // You need to pass the string you want the highlights
-                    words: highlightMap.getMap, // Your dictionary words
-                    textStyle: TextStyle(
-                        // You can set the general style, like a Text()
-                        fontSize: 20.0,
-                        color: Colors.black,
-                        wordSpacing: 4.0),
-                    textAlign: TextAlign
-                        .justify, // You can use any attribute of the RichText widget
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsDrwtNo1}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsDrwtNo1)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsDrwtNo1)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsDrwtNo1),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsDrwtNo2}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsDrwtNo2)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsDrwtNo2)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsDrwtNo2),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsDrwtNo3}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsDrwtNo3)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsDrwtNo3)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsDrwtNo3),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsDrwtNo4}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsDrwtNo4)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsDrwtNo4)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsDrwtNo4),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsDrwtNo5}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsDrwtNo5)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsDrwtNo5)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsDrwtNo5),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsDrwtNo6}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsDrwtNo6)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsDrwtNo6)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsDrwtNo6),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Text(
+                    '+',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20.0,
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 5)),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${lotto[index].lhsBnusNo}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: lottoNum == int.parse(lotto[index].lhsBnusNo)
+                            ? Colors.red
+                            : Colors.black,
+                        style: BorderStyle.solid,
+                        width: lottoNum == int.parse(lotto[index].lhsBnusNo)
+                            ? 3.0
+                            : 1.0,
+                      ),
+                      gradient: LinearGradient(
+                        colors: _aaaa(lotto[index].lhsBnusNo),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -123,5 +539,18 @@ class SubPage extends StatelessWidget {
         separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),
     );
+  }
+
+  _aaaa(String val) {
+    if (int.parse(val) < 11)
+      return [Colors.yellow[700], Colors.yellow[700]];
+    else if (int.parse(val) < 21)
+      return [Colors.blue[800], Colors.blue[800]];
+    else if (int.parse(val) < 31)
+      return [Colors.red[800], Colors.red[800]];
+    else if (int.parse(val) < 41)
+      return [Colors.black, Colors.black];
+    else
+      return [Colors.green[800], Colors.green[800]];
   }
 }
