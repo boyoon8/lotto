@@ -56,8 +56,8 @@ class _MyHomePageState extends State<MyHomePage>
   List<Data> listItems = [];
   var items = List<Data>();
 
-  // List<Lhs> configItems = [];
-  // var cItems = List<Lhs>();
+  List<Lhs> configItems = [];
+  var cItems = List<Lhs>();
 
   List<Info> listinfo = [];
   var infos = List<Info>();
@@ -72,17 +72,9 @@ class _MyHomePageState extends State<MyHomePage>
   String title4 = '혹은 로또 번호 입력해 보세요';
   String title5 = '띄어 쓰기로 구분하시면 좋습니다';
   String hinttext = '꿈내용 또는 로또숫자를 입력하세요';
-
-  String lhsDrwtNo1 = '';
-  String lhsDrwtNo2 = '';
-  String lhsDrwtNo3 = '';
-  String lhsDrwtNo4 = '';
-  String lhsDrwtNo5 = '';
-  String lhsDrwtNo6 = '';
-  String lhsBnusNo = '';
-  // Hinttext2 hinttext2 = null;
+  Hinttext2 hinttext2 = null;
   // Hinttext2 hinttext3 = null;
-  Keyword keyword;
+  Keyword keyword = null;
   int admobisdispaly1 = 1;
   int admobisdispaly2 = 1;
   int admobrandispaly1 = 10;
@@ -114,15 +106,15 @@ class _MyHomePageState extends State<MyHomePage>
     return result;
   }
 
-  // Future<LottoInfo2> fetchInfo2() async {
-  //   var url = 'http://lotto.dbpopcon.com/search/drwNo_info2/' +
-  //       '${this._selectedCompany}';
-  //   var res = await http.get(url);
+  Future<LottoInfo2> fetchInfo2() async {
+    var url = 'http://lotto.dbpopcon.com/search/drwNo_info2/' +
+        '${this._selectedCompany}';
+    var res = await http.get(url);
 
-  //   LottoInfo2 result = LottoInfo2.fromJson(json.decode(res.body));
+    LottoInfo2 result = LottoInfo2.fromJson(json.decode(res.body));
 
-  //   return result;
-  // }
+    return result;
+  }
 
   Future<LottoData> fetchData() async {
     var res = await http.get('http://lotto.dbpopcon.com/search');
@@ -143,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage>
         DropdownMenuItem(
           value: int.parse(element.lhsDrwNo),
           child: Text(
-              element.lhsDrwNo + '회차 (' + element.lhsDrwNoDate + ') 당첨 번호',
+              ' ' + element.lhsDrwNo + '회차 (' + element.lhsDrwNoDate + ')',
               style: TextStyle(fontSize: 20)),
         ),
       );
@@ -163,20 +155,23 @@ class _MyHomePageState extends State<MyHomePage>
       this.title3 = lottoResult.title3;
       this.title4 = lottoResult.title4;
       this.hinttext = lottoResult.hinttext;
-      // this.hinttext2 = lottoResult.hinttext2;
+      this.hinttext2 = lottoResult.hinttext2;
       // this.hinttext3 = lottoResult.hinttext3;
       this.keyword = lottoResult.keyword;
       this.admobisdispaly1 = lottoResult.admobisdispaly1;
       this.admobisdispaly2 = lottoResult.admobisdispaly2;
       this.admobrandispaly1 = lottoResult.admobrandispaly1;
       this.admobrandispaly2 = lottoResult.admobrandispaly2;
+      setState(() {
+        this._visible = !this._visible;
+      });
 
       // scaffoldKey.currentState
       // .showSnackBar(SnackBar(content: Text("SnackBarTest4 - 1")));
 
-      // this.hinttext2.lhs.forEach((element) {
-      //   this.configItems.add(element);
-      // });
+      this.hinttext2.lhs.forEach((element) {
+        this.configItems.add(element);
+      });
 
       this.keyword.keyword.forEach((element) {
         this.keywordItems.add(element);
@@ -191,19 +186,13 @@ class _MyHomePageState extends State<MyHomePage>
 
       _dropdownMenuItems = buildDropdownMenuItems(infos);
       _selectedCompany = _dropdownMenuItems[0].value;
-
-      onChangeDropdownItem(_selectedCompany);
-
-      setState(() {
-        this._visible = !this._visible;
-      });
     });
-    // fetchInfo2().then((lottoinfo2) {
-    //   this.totSellamnt = int.parse(lottoinfo2.totSellamnt);
-    //   this.firstWinamnt = int.parse(lottoinfo2.firstWinamnt);
-    //   this.firstAccumamnt = int.parse(lottoinfo2.firstAccumamnt);
-    //   this.firstPrzwnerCo = int.parse(lottoinfo2.firstPrzwnerCo);
-    // });
+    fetchInfo2().then((lottoinfo2) {
+      this.totSellamnt = int.parse(lottoinfo2.totSellamnt);
+      this.firstWinamnt = int.parse(lottoinfo2.firstWinamnt);
+      this.firstAccumamnt = int.parse(lottoinfo2.firstAccumamnt);
+      this.firstPrzwnerCo = int.parse(lottoinfo2.firstPrzwnerCo);
+    });
     adMob.init();
   }
 
@@ -213,51 +202,10 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
   }
 
-  void onChangeDropdownItem(int selectedCompany) async {
-    var url =
-        'http://lotto.dbpopcon.com/search/drwNo_info2/' + '$selectedCompany';
-    var res = await http.get(url);
-
-    if (res.statusCode == 406) {
-      Msg result = Msg.fromJson(json.decode(res.body));
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          // return object of type Dialog
-          return AlertDialog(
-            title: new Text('알림'),
-            content: new Text(result.msg),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("닫기"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      LottoInfo2 result = LottoInfo2.fromJson(json.decode(res.body));
-
-      setState(() {
-        this._selectedCompany = selectedCompany;
-        this.totSellamnt = int.parse(result.totSellamnt);
-        this.firstWinamnt = int.parse(result.firstWinamnt);
-        this.firstAccumamnt = int.parse(result.firstAccumamnt);
-        this.firstPrzwnerCo = int.parse(result.firstPrzwnerCo);
-
-        this.lhsDrwtNo1 = result.lhsDrwtNo1;
-        this.lhsDrwtNo2 = result.lhsDrwtNo2;
-        this.lhsDrwtNo3 = result.lhsDrwtNo3;
-        this.lhsDrwtNo4 = result.lhsDrwtNo4;
-        this.lhsDrwtNo5 = result.lhsDrwtNo5;
-        this.lhsDrwtNo6 = result.lhsDrwtNo6;
-        this.lhsBnusNo = result.lhsBnusNo;
-      });
-    }
+  onChangeDropdownItem(int selectedCompany) {
+    setState(() {
+      _selectedCompany = selectedCompany;
+    });
   }
 
   @override
@@ -424,358 +372,331 @@ class _MyHomePageState extends State<MyHomePage>
               ],
             ),
             if (items.length < 1 || editingController.text == '')
-              new Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
+              Column(
+                children: [
+                  Padding(padding: EdgeInsets.only(top: 10)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(padding: EdgeInsets.only(top: 10)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            // color: Colors.green[400],
-                            child: DropdownButton(
-                              value: _selectedCompany,
-                              items: _dropdownMenuItems,
-                              onChanged: (value) {
-                                onChangeDropdownItem(value);
-                              },
-                            ),
-                          ),
-                          // Text(' 당첨 번호 확인', style: TextStyle(fontSize: 20)),
-                        ],
-                      ),
-                      // Padding(padding: EdgeInsets.all(5)),
                       Container(
-                        height: 40,
-                        color: Colors.white,
-                        child: Row(
-                          children: [
-                            Padding(padding: EdgeInsets.only(left: 10)),
-                            Text(
-                              this._selectedCompany.toString() + '회 ',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsDrwtNo1,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsDrwtNo1),
-                                ),
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsDrwtNo2,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsDrwtNo2),
-                                ),
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsDrwtNo3,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsDrwtNo3),
-                                ),
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsDrwtNo4,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsDrwtNo4),
-                                ),
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsDrwtNo5,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsDrwtNo5),
-                                ),
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsDrwtNo6,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsDrwtNo6),
-                                ),
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Text(
-                              '+',
+                        // color: Colors.green[400],
+                        child: DropdownButton(
+                          value: _selectedCompany,
+                          items: _dropdownMenuItems,
+                          onChanged: (value) {
+                            onChangeDropdownItem(value);
+                          },
+                        ),
+                      ),
+                      Text(' 당첨 번호 확인', style: TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                  // Padding(padding: EdgeInsets.all(5)),
+                  Container(
+                    height: 40,
+                    color: Colors.white,
+                    child: Row(
+                      children: [
+                        Padding(padding: EdgeInsets.only(left: 10)),
+                        Text(
+                          configItems[0].lhsDrwNo + '회 ',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo1}',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20.0,
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 5)),
-                            Container(
-                              width: 30,
-                              height: 30,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  this.lhsBnusNo,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17.0,
-                                  ),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25.0),
                                 color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0,
-                                ),
-                                gradient: LinearGradient(
-                                  colors: _aaaa(this.lhsBnusNo),
-                                ),
+                                fontSize: 17.0,
                               ),
                             ),
-                          ],
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo1),
+                            ),
+                          ),
                         ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo2}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo2),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo3}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo3),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo4}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo4),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo5}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo5),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsDrwtNo6}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsDrwtNo6),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Text(
+                          '+',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.only(left: 5)),
+                        Container(
+                          width: 30,
+                          height: 30,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${configItems[0].lhsBnusNo}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17.0,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              style: BorderStyle.solid,
+                              width: 1.0,
+                            ),
+                            gradient: LinearGradient(
+                              colors: _aaaa(configItems[0].lhsBnusNo),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(4),
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      MaterialButton(
+                        height: 30,
+                        minWidth: 10,
+                        child: Text('QR 코드로 당첨 확인하기',
+                            style: TextStyle(fontSize: 15)),
+                        color: Colors.green[400],
+                        textColor: Colors.white,
+                        onPressed: () {
+                          editingController.text = this.keywordItems[1];
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      MaterialButton(
+                        height: 30,
+                        minWidth: 10,
+                        child: Text('기타', style: TextStyle(fontSize: 15)),
+                        color: Colors.green[400],
+                        textColor: Colors.white,
+                        onPressed: () {
+                          editingController.text = this.keywordItems[2];
+                        },
                       ),
                       Padding(
                         padding: EdgeInsets.all(4),
                       ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(4),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                          MaterialButton(
-                            height: 30,
-                            minWidth: 10,
-                            child: Text('QR 코드로 당첨 확인하기',
-                                style: TextStyle(fontSize: 15)),
-                            color: Colors.green[400],
-                            textColor: Colors.white,
-                            onPressed: () {
-                              editingController.text = this.keywordItems[1];
-                            },
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                          MaterialButton(
-                            height: 30,
-                            minWidth: 10,
-                            child: Text('기타', style: TextStyle(fontSize: 15)),
-                            color: Colors.green[400],
-                            textColor: Colors.white,
-                            onPressed: () {
-                              editingController.text = this.keywordItems[2];
-                            },
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(4),
-                          ),
-                        ],
-                      ),
+                    ],
+                  ),
 
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 150,
-                            child: Center(
-                              child: Text('총 매 금액 : ',
-                                  style: TextStyle(fontSize: 19)),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                          Text(numberWithComma(this.totSellamnt),
-                              style: TextStyle(fontSize: 19)),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                        ],
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
                       ),
+                      Text('총 팬매 금액 : '),
                       Padding(
                         padding: EdgeInsets.all(2),
                       ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 150,
-                            child: Center(
-                              child: Text('총 매 금액 : ',
-                                  style: TextStyle(fontSize: 19)),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                          Text(
-                            numberWithComma(this.firstAccumamnt),
-                            style: TextStyle(fontSize: 19),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                        ],
-                      ),
+                      Text(numberWithComma(this.totSellamnt)),
                       Padding(
                         padding: EdgeInsets.all(2),
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 150,
-                            child: Center(
-                              child: Text(
-                                '총 매 금액 : ',
-                                style: TextStyle(fontSize: 19),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                          Text(numberWithComma(this.firstPrzwnerCo),
-                              style: TextStyle(fontSize: 19)),
-                          Padding(
-                            padding: EdgeInsets.all(2),
-                          ),
-                        ],
                       ),
                     ],
                   ),
-                ),
-                // ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Text('1등 당첨 금액 : '),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      Text(numberWithComma(this.firstAccumamnt)),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4),
+                      ),
+                      Text('1등 당첨자 : '),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                      Text(numberWithComma(this.firstPrzwnerCo)),
+                      Padding(
+                        padding: EdgeInsets.all(2),
+                      ),
+                    ],
+                  ),
+                ],
               )
             else
               new Expanded(
